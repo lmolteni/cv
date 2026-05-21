@@ -1,0 +1,63 @@
+name: Slack Presence
+
+on:
+  schedule:
+    - cron: '*/8 * * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  keep-active:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check schedule and set presence
+        env:
+          SLACK_USER_TOKEN: ${{ secrets.SLACK_USER_TOKEN }}
+        run: |
+          python3 << 'EOF'
+          import os, requests, random, datetime
+
+          # Zona horaria Argentina (UTC-3)
+          now_utc = datetime.datetime.utcnow()
+          now_art = now_utc - datetime.timedelta(hours=3)
+          
+          hour = now_art.hour
+          minute = now_art.minute
+          total_minutes = hour * 60 + minute
+          date_str = now_art.strftime("%Y-%m-%d")
+
+          # Fechas a saltear
+          SKIP_DATES = [
+            "2026-05-25",  # feriado
+            "2026-07-09",  # feriado
+            # agregá más acá
+          ]
+
+          if date_str in SKIP_DATES:
+            print(f"Fecha salteada: {date_str}")
+            exit(0)
+
+          # Ventana de inicio: random entre 8:42 y 9:13
+          random.seed(date_str + "start")
+          start_minutes = random.randint(8*60+42, 9*60+13)
+
+          # Ventana de fin: random entre 18:19 y 19:21
+          random.seed(date_str + "end")
+          end_minutes = random.randint(18*60+19, 19*60+21)
+
+          if total_minutes < start_minutes or total_minutes > end_minutes:
+            print(f"Fuera de ventana horaria ({hour:02d}:{minute:02d} ART)")
+            exit(0)
+
+          token = os.environ["SLACK_USER_TOKEN"]
+          response = requests.post(
+            "https://slack.com/api/users.setPresence",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"presence": "auto"}
+          )
+          data = response.json()
+          if data.get("ok"):
+            print(f"Presencia actualizada OK ({hour:02d}:{minute:02d} ART)")
+          else:
+            print(f"Error: {data}")
+            exit(1)
+          EOF

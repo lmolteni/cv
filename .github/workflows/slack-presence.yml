@@ -17,8 +17,7 @@ jobs:
           import os, requests, random, datetime
 
           # Zona horaria Argentina (UTC-3)
-          now_utc = datetime.datetime.utcnow()
-          now_art = now_utc - datetime.timedelta(hours=3)
+          now_art = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) - datetime.timedelta(hours=3)
           
           hour = now_art.hour
           minute = now_art.minute

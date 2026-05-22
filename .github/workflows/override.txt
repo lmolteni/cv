@@ -1,0 +1,2 @@
+# + fecha = conectar aunque sea feriado (ej: +2026-07-09)
+# - fecha = NO conectar aunque sea laboral (ej: -2026-05-26)

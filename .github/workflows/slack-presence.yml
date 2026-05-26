@@ -2,8 +2,9 @@ name: Slack Presence
 
 on:
   schedule:
-    - cron: '*/8 10-23 * * 1-5'   # desde 10:00 UTC (7:00 ART)
-    - cron: '22 13 * * 1-5'       # holiday check 10:22 ART
+    - cron: '*/8 10-23 * * 1-5'
+    - cron: '4-59/8 10-23 * * 1-5'
+    - cron: '22 13 * * 1-5'
   workflow_dispatch:
 
 jobs:

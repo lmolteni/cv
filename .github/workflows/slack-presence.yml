@@ -155,7 +155,7 @@ jobs:
           r = requests.post(
               "https://slack.com/api/users.setPresence",
               headers={"Authorization": f"Bearer {TOKEN}"},
-              json={"presence": "auto"}
+              json={"presence": "active"}
           ).json()
 
           if r.get("ok"):
